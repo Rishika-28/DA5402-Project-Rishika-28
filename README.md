@@ -163,3 +163,6 @@ Stop the Airflow stack:
 ```powershell
 docker compose -f docker-compose.airflow.yml down
 ```
+
+## Note
+- The dataset should be downloaded from https://www.kaggle.com/competitions/rossmann-store-sales/data
