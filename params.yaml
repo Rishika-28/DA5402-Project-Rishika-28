@@ -1,0 +1,32 @@
+dataset:
+  train_path: data/train.csv
+  store_path: data/store.csv
+  processed_dir: data/processed
+  train_processed_path: data/processed/train_features.csv
+  validation_processed_path: data/processed/validation_features.csv
+  feature_baseline_path: reports/feature_baseline.json
+  schema_report_path: reports/schema_report.json
+
+split:
+  validation_days: 42
+
+training:
+  tracking_uri: file:./mlruns
+  experiment_name: rossmann_sales_forecasting_docker
+  random_state: 42
+  sample_rows: 300000
+  model_name: hist_gradient_boosting
+  target_column: Sales
+  prediction_output_path: reports/validation_predictions.csv
+  model_uri_output_path: models/latest_model_uri.txt
+  registry_metadata_path: models/model_registry.json
+
+monitoring:
+  feedback_path: data/feedback/live_feedback.csv
+  drift_report_path: reports/drift_report.json
+  request_log_path: reports/request_log.jsonl
+  drift_threshold_zscore: 2.5
+
+service:
+  model_service_url: http://model-service:8001
+  local_model_service_url: http://127.0.0.1:8001

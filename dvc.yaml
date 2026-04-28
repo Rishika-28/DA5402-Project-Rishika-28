@@ -1,0 +1,47 @@
+stages:
+  prepare_data:
+    cmd: python -m src.data_pipeline prepare --params params.yaml
+    deps:
+      - src/data_pipeline.py
+      - src/features.py
+      - src/utils.py
+      - data/train.csv
+      - data/store.csv
+      - params.yaml
+    outs:
+      - data/processed/train_features.csv
+      - data/processed/validation_features.csv
+    metrics:
+      - reports/schema_report.json
+      - reports/feature_baseline.json
+  train_model:
+    cmd: python -m src.train --params params.yaml
+    deps:
+      - src/train.py
+      - src/features.py
+      - src/utils.py
+      - data/processed/train_features.csv
+      - data/processed/validation_features.csv
+      - params.yaml
+    outs:
+      - models/latest_model_uri.txt
+      - models/model_registry.json
+    metrics:
+      - reports/training_summary.json
+      - reports/model_comparison.json
+  evaluate_model:
+    cmd: python -m src.evaluate --params params.yaml
+    deps:
+      - src/evaluate.py
+      - src/utils.py
+      - data/processed/validation_features.csv
+      - models/latest_model_uri.txt
+      - models/model_registry.json
+      - params.yaml
+    outs:
+      - reports/pipeline_summary.json
+      - reports/api_examples.json
+    metrics:
+      - reports/evaluation_metrics.json
+      - reports/drift_report.json
+

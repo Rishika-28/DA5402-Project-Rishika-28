@@ -1,0 +1,61 @@
+services:
+  model-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.model
+    container_name: rossmann-model-service
+    ports:
+      - "8101:8001"
+    volumes:
+      - ./mlruns:/app/mlruns
+      - ./models:/app/models
+      - ./reports:/app/reports
+      - ./data:/app/data
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: rossmann-api-gateway
+    depends_on:
+      - model-service
+    environment:
+      MODEL_SERVICE_URL: http://model-service:8001
+    ports:
+      - "8103:8000"
+    volumes:
+      - ./docs:/app/docs
+      - ./models:/app/models
+      - ./reports:/app/reports
+      - ./data:/app/data
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: rossmann-frontend
+    depends_on:
+      - api-gateway
+    ports:
+      - "8088:80"
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: rossmann-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+    ports:
+      - "9091:9090"
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    container_name: rossmann-grafana
+    depends_on:
+      - prometheus
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./monitoring/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3001:3000"

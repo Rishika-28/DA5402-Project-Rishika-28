@@ -1,0 +1,27 @@
+groups:
+  - name: rossmann-forecasting-alerts
+    rules:
+      - alert: HighApiGatewayErrorRate
+        expr: rate(api_gateway_failures_total[5m]) / clamp_min(rate(api_gateway_requests_total[5m]), 0.0001) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: API gateway error rate above 5%
+
+      - alert: HighModelServiceErrorRate
+        expr: rate(model_service_failures_total[5m]) / clamp_min(rate(model_service_requests_total[5m]), 0.0001) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Model service error rate above 5%
+
+      - alert: DataDriftDetected
+        expr: increase(model_service_drift_events_total[10m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: Request-level feature drift detected
+

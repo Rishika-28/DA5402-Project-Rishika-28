@@ -1,0 +1,14 @@
+name: rossmann-sales-forecasting
+
+conda_env: python_env.yaml
+
+entry_points:
+  prepare:
+    command: "python -m src.data_pipeline prepare --params params.yaml"
+  train:
+    command: "python -m src.train --params params.yaml"
+  evaluate:
+    command: "python -m src.evaluate --params params.yaml"
+  full_pipeline:
+    command: "python -m src.data_pipeline prepare --params params.yaml && python -m src.train --params params.yaml && python -m src.evaluate --params params.yaml"
+

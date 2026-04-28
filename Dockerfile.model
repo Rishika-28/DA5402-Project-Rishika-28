@@ -1,0 +1,14 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.model.txt requirements.txt params.yaml ./
+RUN pip install --no-cache-dir -r requirements.model.txt
+COPY app ./app
+COPY src ./src
+COPY models ./models
+COPY reports ./reports
+COPY data ./data
+
+EXPOSE 8001
+CMD ["uvicorn", "app.model_service:app", "--host", "0.0.0.0", "--port", "8001"]
+
