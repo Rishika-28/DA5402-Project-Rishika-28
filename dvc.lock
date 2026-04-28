@@ -13,8 +13,8 @@ stages:
       size: 38057952
     - path: params.yaml
       hash: md5
-      md5: 18f780499e8aaa02227261833b57e4a2
-      size: 1006
+      md5: f42ef49527b6339315b2781ebf76cd6f
+      size: 1012
     - path: src/data_pipeline.py
       hash: md5
       md5: 232b5cf65e85c308708f8759cda160a2
@@ -57,16 +57,16 @@ stages:
       size: 5099964
     - path: params.yaml
       hash: md5
-      md5: 18f780499e8aaa02227261833b57e4a2
-      size: 1006
+      md5: f42ef49527b6339315b2781ebf76cd6f
+      size: 1012
     - path: src/features.py
       hash: md5
       md5: 94a90800ebf6756f30737e95800323db
       size: 5020
     - path: src/train.py
       hash: md5
-      md5: 762f9234b06e2103c2c9df33afb71795
-      size: 7771
+      md5: beab50a0d0450cd7d62fe4e6a781a7e4
+      size: 8127
     - path: src/utils.py
       hash: md5
       md5: b1c284b6d7ba374d8dde31b859c0755b
@@ -74,20 +74,20 @@ stages:
     outs:
     - path: models/latest_model_uri.txt
       hash: md5
-      md5: 202c656dd1515d14f47e166ab4c55285
-      size: 44
+      md5: 8635240c2fdfd9976d3a0ed228580d68
+      size: 20
     - path: models/model_registry.json
       hash: md5
-      md5: 4415263f5412b0a37b89595a3ba7896c
-      size: 332
+      md5: cb1f7eb89cf4e8116a11c367956b731c
+      size: 308
     - path: reports/model_comparison.json
       hash: md5
-      md5: a96eed82d400fdb98630bfd39f3af65e
+      md5: e1e19568cd75f2f34cf7b4e6938892db
       size: 968
     - path: reports/training_summary.json
       hash: md5
-      md5: 10c543d71950e285629018d421ab8c0a
-      size: 417
+      md5: 62f19adeaa6f24a7cfc5358f8ffc3854
+      size: 392
   evaluate_model:
     cmd: python -m src.evaluate --params params.yaml
     deps:
@@ -97,16 +97,16 @@ stages:
       size: 5099964
     - path: models/latest_model_uri.txt
       hash: md5
-      md5: 202c656dd1515d14f47e166ab4c55285
-      size: 44
+      md5: 8635240c2fdfd9976d3a0ed228580d68
+      size: 20
     - path: models/model_registry.json
       hash: md5
-      md5: 4415263f5412b0a37b89595a3ba7896c
-      size: 332
+      md5: cb1f7eb89cf4e8116a11c367956b731c
+      size: 308
     - path: params.yaml
       hash: md5
-      md5: 18f780499e8aaa02227261833b57e4a2
-      size: 1006
+      md5: f42ef49527b6339315b2781ebf76cd6f
+      size: 1012
     - path: src/evaluate.py
       hash: md5
       md5: ba3baf15bd3ee345eaf0183af913b8b5
@@ -130,5 +130,5 @@ stages:
       size: 156
     - path: reports/pipeline_summary.json
       hash: md5
-      md5: e2fe508d9f1b70256fb335c71e6007b0
-      size: 1319
+      md5: ca81f3f031584d386b715514e8563710
+      size: 1293

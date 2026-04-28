@@ -1,51 +1,589 @@
 {
-  "annotations": {"list": []},
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": null,
   "links": [],
   "panels": [
     {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "0": {
+                  "text": "Down"
+                },
+                "1": {
+                  "text": "Up"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
       "id": 1,
-      "title": "API Request Rate",
-      "type": "timeseries",
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "rate(api_gateway_requests_total[1m])", "refId": "A"}],
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "sum(up{job=~\"api-gateway|model-service\"})",
+          "refId": "A"
+        }
+      ],
+      "title": "Services Reachable",
+      "type": "stat"
     },
     {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
       "id": 2,
-      "title": "Model Request Latency p95",
-      "type": "timeseries",
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "histogram_quantile(0.95, sum(rate(model_service_request_latency_seconds_bucket[5m])) by (le))", "refId": "A"}],
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "sum(model_service_requests_total) + sum(api_gateway_requests_total)",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Requests",
+      "type": "stat"
     },
     {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.1
+              },
+              {
+                "color": "red",
+                "value": 0.2
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
       "id": 3,
-      "title": "Drift Events",
-      "type": "stat",
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "model_service_drift_events_total", "refId": "A"}],
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(model_service_request_latency_seconds_bucket[5m])))",
+          "refId": "A"
+        }
+      ],
+      "title": "Model P95 Latency",
+      "type": "stat"
     },
     {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.05
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
       "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "sum(rate(model_service_failures_total[5m]) + rate(api_gateway_failures_total[5m])) / clamp_min(sum(rate(model_service_requests_total[5m]) + rate(api_gateway_requests_total[5m])), 0.0001)",
+          "refId": "A"
+        }
+      ],
+      "title": "Combined Failure Rate",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "rate(api_gateway_requests_total[5m])",
+          "legendFormat": "API Gateway",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(model_service_requests_total[5m])",
+          "legendFormat": "Model Service",
+          "refId": "B"
+        }
+      ],
+      "title": "Request Throughput by Service",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(api_gateway_request_latency_seconds_bucket[5m])))",
+          "legendFormat": "API Gateway p95",
+          "refId": "A"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(model_service_request_latency_seconds_bucket[5m])))",
+          "legendFormat": "Model Service p95",
+          "refId": "B"
+        }
+      ],
+      "title": "Latency Trend",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 14
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "api_gateway_failures_total",
+          "legendFormat": "API failures",
+          "refId": "A"
+        },
+        {
+          "expr": "model_service_failures_total",
+          "legendFormat": "Model failures",
+          "refId": "B"
+        }
+      ],
+      "title": "Failure Counters",
+      "type": "timeseries"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 14
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "increase(model_service_drift_events_total[10m])",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent Drift Alerts",
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 14
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "feedback_events_total",
+          "refId": "A"
+        }
+      ],
       "title": "Feedback Events",
-      "type": "stat",
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "targets": [{"expr": "feedback_events_total", "refId": "A"}],
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      "type": "stat"
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "12.2.0",
+      "targets": [
+        {
+          "expr": "up{job=\"api-gateway\"}",
+          "legendFormat": "API Gateway up",
+          "refId": "A"
+        },
+        {
+          "expr": "up{job=\"model-service\"}",
+          "legendFormat": "Model Service up",
+          "refId": "B"
+        },
+        {
+          "expr": "api_gateway_requests_total",
+          "legendFormat": "API total requests",
+          "refId": "C"
+        },
+        {
+          "expr": "model_service_requests_total",
+          "legendFormat": "Model total requests",
+          "refId": "D"
+        },
+        {
+          "expr": "model_service_drift_events_total",
+          "legendFormat": "Total drift events",
+          "refId": "E"
+        },
+        {
+          "expr": "feedback_events_total",
+          "legendFormat": "Total feedback events",
+          "refId": "F"
+        }
+      ],
+      "title": "Ops Overview",
+      "type": "timeseries"
     }
   ],
   "refresh": "10s",
-  "schemaVersion": 39,
-  "style": "dark",
-  "tags": ["mlops", "forecasting"],
-  "templating": {"list": []},
-  "time": {"from": "now-6h", "to": "now"},
-  "timezone": "browser",
-  "title": "Rossmann Forecasting Dashboard",
-  "version": 1
+  "schemaVersion": 41,
+  "tags": [
+    "rossmann",
+    "mlops",
+    "monitoring"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Rossmann MLOps Control Tower",
+  "uid": "rossmann-monitoring",
+  "version": 2,
+  "weekStart": ""
 }
-
