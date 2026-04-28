@@ -1,0 +1,71 @@
+services:
+  airflow-init:
+    image: apache/airflow:2.9.3
+    container_name: rossmann-airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/state/airflow.db
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow-state:/opt/airflow/state
+      - ./airflow-logs:/opt/airflow/logs
+      - ./src:/opt/airflow/src
+      - ./app:/opt/airflow/app
+      - ./data:/opt/airflow/data
+      - ./models:/opt/airflow/models
+      - ./reports:/opt/airflow/reports
+      - ./params.yaml:/opt/airflow/params.yaml
+    command: db migrate
+
+  airflow-webserver:
+    image: apache/airflow:2.9.3
+    container_name: rossmann-airflow-webserver
+    restart: on-failure
+    depends_on:
+      - airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/state/airflow.db
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow-state:/opt/airflow/state
+      - ./airflow-logs:/opt/airflow/logs
+      - ./src:/opt/airflow/src
+      - ./app:/opt/airflow/app
+      - ./data:/opt/airflow/data
+      - ./models:/opt/airflow/models
+      - ./reports:/opt/airflow/reports
+      - ./params.yaml:/opt/airflow/params.yaml
+    ports:
+      - "8081:8080"
+    command: webserver
+
+  airflow-scheduler:
+    image: apache/airflow:2.9.3
+    container_name: rossmann-airflow-scheduler
+    restart: on-failure
+    depends_on:
+      - airflow-init
+    environment:
+      AIRFLOW__CORE__EXECUTOR: SequentialExecutor
+      AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/state/airflow.db
+      AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+      PYTHONPATH: /opt/airflow
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./airflow-state:/opt/airflow/state
+      - ./airflow-logs:/opt/airflow/logs
+      - ./src:/opt/airflow/src
+      - ./app:/opt/airflow/app
+      - ./data:/opt/airflow/data
+      - ./models:/opt/airflow/models
+      - ./reports:/opt/airflow/reports
+      - ./params.yaml:/opt/airflow/params.yaml
+    command: scheduler

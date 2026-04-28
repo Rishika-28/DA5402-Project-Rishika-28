@@ -22,62 +22,144 @@ Forecast daily store sales for Rossmann stores using historical sales, calendar 
 
 ## Repository Layout
 
-- `src/`: training, feature engineering, evaluation, and metadata export
-- `app/`: FastAPI gateway and model service
-- `frontend/`: responsive static frontend
-- `monitoring/`: Prometheus and Grafana configuration
-- `dags/`: Airflow orchestration DAG
-- `docs/`: architecture, HLD, LLD, tests, and user manual
+- `app/`: FastAPI API gateway and model service
+- `dags/`: Airflow DAG for offline pipeline orchestration
+- `data/`: training data, store metadata, processed outputs, and feedback logs
+- `docs/`: architecture, HLD, LLD, test plan, test report, demo runbook, and user manual
+- `frontend/`: static HTML/CSS/JS user interface
+- `models/`: serving model, selected model URI, and registry metadata
+- `monitoring/`: Prometheus config, alert rules, Grafana dashboards, and provisioning
+- `reports/`: evaluation metrics, drift reports, and pipeline summaries
+- `src/`: data preparation, feature engineering, training, and evaluation logic
 - `tests/`: unit and API tests
+- `docker-compose.yml`: main application stack
+- `docker-compose.airflow.yml`: Airflow UI stack for offline pipeline visualization
 
-## Quick Start
+## Prerequisites
 
-1. Create a virtual environment and install dependencies:
+Install these before running the project:
 
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   pip install -r requirements.txt
-   ```
+- `Python 3.11+`
+- `Docker Desktop`
+- `Git`
+- `DVC`
 
-2. Initialize DVC in this subdirectory once:
+## Environment Setup
 
-   ```powershell
-   dvc init --subdir
-   ```
-
-3. Run the pipeline:
-
-   ```powershell
-   dvc repro
-   ```
-
-4. Start the local services:
-
-   ```powershell
-   uvicorn app.model_service:app --host 0.0.0.0 --port 8001
-   uvicorn app.gateway:app --host 0.0.0.0 --port 8000
-   python -m http.server 8080 --directory frontend
-   ```
-
-5. Open the frontend:
-
-   - `http://localhost:8080`
-
-## Docker Demo
+Create a Python virtual environment for local development, inspection, and optional non-Docker workflows:
 
 ```powershell
-docker compose up --build
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-Services:
+Initialize DVC in this repository once if needed:
 
-- Frontend: `http://localhost:8088`
-- API gateway: `http://localhost:8103/docs`
-- Model service: `http://localhost:8101/docs`
+```powershell
+dvc init --subdir
+```
+
+## Repository Outputs and Important Files
+
+- `models/model_registry.json`: selected model name, run ID, model URI, and metrics
+- `models/latest_model_uri.txt`: active serving model URI
+- `reports/evaluation_metrics.json`: validation metrics
+- `reports/drift_report.json`: drift summary
+- `reports/pipeline_summary.json`: end-to-end pipeline summary
+- `reports/request_log.jsonl`: online inference log
+- `data/feedback/live_feedback.csv`: feedback loop records
+
+## Local Pipeline Commands
+
+These commands are useful for development, validation, and debugging:
+
+```powershell
+dvc repro
+```
+
+```powershell
+pytest
+```
+
+## Submission Flow
+
+This submission is designed to be demonstrated entirely with Docker.
+
+### 1. Start the Main Application Stack
+
+```powershell
+docker compose up -d --build
+```
+
+This starts:
+
+- `rossmann-frontend`
+- `rossmann-api-gateway`
+- `rossmann-model-service`
+- `rossmann-prometheus`
+- `rossmann-grafana`
+
+### 2. Open the Main Application Pages
+
+- Frontend UI: `http://localhost:8088`
+- API Gateway Swagger UI: `http://localhost:8103/docs`
+- Model Service Swagger UI: `http://localhost:8101/docs`
 - Prometheus: `http://localhost:9091`
 - Grafana: `http://localhost:3001`
 
-## Demo Flow
+### 3. Start the Airflow UI Stack
 
-Use `docs/demo_runbook.md` for the exact commands and narration.
+Run these commands in order:
+
+```powershell
+docker compose -f docker-compose.airflow.yml down
+docker compose -f docker-compose.airflow.yml up airflow-init
+docker compose -f docker-compose.airflow.yml up -d airflow-webserver airflow-scheduler
+```
+
+If the Airflow user does not exist yet, create it:
+
+```powershell
+docker exec -it rossmann-airflow-webserver airflow users create --username admin --firstname Rishi --lastname User --role Admin --email admin@example.com --password admin
+```
+
+Open:
+
+- Airflow UI: `http://127.0.0.1:8081`
+
+Login:
+
+- Username: `admin`
+- Password: `admin`
+
+## All Pages to Open
+
+- Frontend UI: `http://localhost:8088`
+- API Gateway Swagger UI: `http://localhost:8103/docs`
+- Model Service Swagger UI: `http://localhost:8101/docs`
+- Prometheus: `http://localhost:9091`
+- Grafana: `http://localhost:3001`
+- Airflow UI: `http://127.0.0.1:8081`
+
+## What Each UI Is For
+
+- `Frontend UI`: non-technical user workflow for forecasting, feedback submission, pipeline summary, and monitoring summary.
+- `Grafana`: live operational monitoring for request throughput, service reachability, latency, failure rate, drift alerts, and feedback events.
+- `Prometheus`: raw metrics and scrape target visibility.
+- `Airflow`: offline ML pipeline orchestration view for `prepare_data`, `train_model`, and `evaluate_model`.
+- `Swagger UIs`: technical verification of API contracts and responses.
+
+## Shutdown Commands
+
+Stop the main application stack:
+
+```powershell
+docker compose down
+```
+
+Stop the Airflow stack:
+
+```powershell
+docker compose -f docker-compose.airflow.yml down
+```
